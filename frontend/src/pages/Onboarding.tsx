@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Nav from '../components/Nav'
 import { createBusiness, createRegistration, evaluateCompliance } from '../lib/api'
@@ -84,6 +84,7 @@ export default function Onboarding() {
 
       await evaluateCompliance(business.id)
 
+      localStorage.setItem('lastBusinessId', business.id)
       navigate(`/dashboard/${business.id}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
@@ -216,7 +217,7 @@ export default function Onboarding() {
   )
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
     <label className="block">
       <span className="mb-1 block text-sm font-medium text-slate-700">{label}</span>

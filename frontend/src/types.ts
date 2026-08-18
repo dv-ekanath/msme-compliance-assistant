@@ -86,6 +86,8 @@ export interface Obligation {
   status: ObligationStatus
   risk_score: number | null
   last_evaluated_at: string
+  regulation_title: string
+  regulation_source_url: string
 }
 
 export interface ComplianceSummary {

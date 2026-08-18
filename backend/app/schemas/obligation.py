@@ -24,6 +24,8 @@ class ObligationRead(BaseModel):
     status: ObligationStatus
     risk_score: float | None
     last_evaluated_at: datetime
+    regulation_title: str
+    regulation_source_url: str
 
 
 class ObligationStatusUpdate(BaseModel):

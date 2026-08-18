@@ -54,3 +54,11 @@ class Obligation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
 
     business: Mapped["Business"] = relationship(back_populates="obligations")  # noqa: F821
     regulation: Mapped["Regulation"] = relationship()  # noqa: F821
+
+    @property
+    def regulation_title(self) -> str:
+        return self.regulation.title
+
+    @property
+    def regulation_source_url(self) -> str:
+        return self.regulation.source_url

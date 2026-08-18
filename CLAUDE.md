@@ -65,10 +65,15 @@ backend via `uvicorn`, frontend via `npm run dev`, DB via `docker compose up -d`
 - [x] **Phase 0 — Foundation.** Repo scaffold, FastAPI + React skeletons,
       Docker Compose (Postgres+pgvector), Alembic wiring, LLM provider
       abstraction, seed-data structure, health-check endpoints.
-- [ ] **Phase 1 — Core Twin + Rules Engine.** Business/Registration/Obligation
-      SQLAlchemy models + Alembic migration, deterministic rules engine
-      (~12–15 rules: GST, Udyam, Shops & Establishment, EPF/ESI, professional
-      tax), onboarding API + UI, Twin dashboard + checklist UI.
+- [x] **Phase 1 — Core Twin + Rules Engine.** User/Business/Registration/
+      Regulation/Obligation/Filing models + hand-written Alembic migration
+      (`0001_initial_schema`), 9-rule deterministic Rules Engine (GST,
+      Udyam, EPF, ESI, Shops & Establishment, Professional Tax) reading
+      configurable thresholds from seeded Regulation rows, 6 regulations
+      seeded from real government sources, `/business` `/registrations`
+      `/twin` `/obligations` `/compliance` API modules, Onboarding/
+      Dashboard/Checklist frontend screens, 48 backend tests. No RAG/LLM
+      involved anywhere in the rules/twin path -- see `app/rules/`.
 - [ ] **Phase 2 — RAG + Explainability.** Curate real regulation corpus,
       embed via pgvector, retrieval + citation-grounded chat endpoint (must
       use the `LLMProvider` abstraction), chat UI, KG-linked "why this

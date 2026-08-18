@@ -4,10 +4,12 @@ A Compliance Digital Twin for MSMEs: per-business regulatory state (registration
 obligations, filings, risk) kept in sync with a regulatory knowledge graph, with
 explainable, citation-grounded recommendations.
 
-**Status: Phase 0 — Foundation.** Repo scaffold, backend/frontend skeletons, DB
-config, and the LLM provider abstraction are in place. No feature logic (rules
-engine, RAG, voice, watchdog, approvals, etc.) exists yet — see `CLAUDE.md` for
-the phase plan.
+**Status: Phase 1 — Compliance Digital Twin + Rules Engine.** A business can be
+onboarded, its Digital Twin retrieved, and a deterministic (non-LLM) Rules
+Engine evaluates 9 real compliance rules against it, producing explainable,
+citation-backed obligations shown in the frontend checklist. RAG, voice,
+watchdog, predictive scoring, auth, and the approval workflow are not built
+yet — see `CLAUDE.md` for the phase plan.
 
 ## Stack
 
@@ -73,13 +75,43 @@ curl http://localhost:8000/api/v1/health/db
 
 ### Database migrations (Alembic)
 
-No tables exist yet (Phase 0 has no domain models). Once Postgres is running:
+Once Postgres is running:
 ```
 cd backend
 alembic upgrade head
 ```
-This is currently a no-op (no migrations exist yet) but confirms the DB
-connection and Alembic wiring both work end-to-end.
+Creates `users`, `businesses`, `registrations`, `regulations`, `obligations`,
+`filings` (see `alembic/versions/0001_initial_schema.py`).
+
+### Seed the regulatory knowledge base
+
+The Rules Engine won't run until its 6 regulations (GST, Udyam, EPF, ESI,
+Shops & Establishment, Professional Tax) are loaded:
+```
+cd backend
+python -m seed.load_regulations
+```
+Idempotent — safe to re-run after editing a file in `seed/regulations/`.
+
+### Try it end-to-end
+
+```
+curl -X POST http://localhost:8000/api/v1/business -H "Content-Type: application/json" -d "{\"name\":\"Test Co\",\"sector\":\"trading\",\"state\":\"Maharashtra\",\"registration_type\":\"proprietorship\",\"turnover_band\":\"5cr_50cr\",\"employee_count\":45}"
+# copy the returned "id", then:
+curl -X POST http://localhost:8000/api/v1/compliance/evaluate/<business_id>
+curl http://localhost:8000/api/v1/twin/<business_id>
+```
+
+### Backend tests
+
+```
+cd backend
+pip install -r requirements-dev.txt
+pytest
+```
+Runs fully offline against an in-memory SQLite DB (no Docker/Postgres
+needed) — 48 tests covering the API, the Digital Twin, and positive/negative
+cases for all 9 rules.
 
 ## 4. Frontend setup
 
@@ -91,9 +123,13 @@ copy .env.example .env      # PowerShell; on Bash: cp .env.example .env
 npm run dev
 ```
 
-Frontend is now at http://localhost:5173. It calls the backend's
-`/api/v1/health` endpoint on load and shows a live "Backend online/offline"
-badge in the header.
+Frontend is now at http://localhost:5173:
+- `/onboarding` — create a business profile, flag any existing registrations,
+  and immediately run the Rules Engine
+- `/dashboard/:businessId` — the Digital Twin: profile, registrations,
+  compliance-health summary, upcoming deadlines
+- `/checklist/:businessId` — every obligation with its reason, source
+  regulation, and due-date status, filterable by All / Due soon / Overdue / Completed
 
 ## LLM provider: mock vs. real Claude API
 
@@ -128,29 +164,37 @@ msme-compliance-assistant/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py                # FastAPI app entrypoint
-│   │   ├── core/
-│   │   │   ├── config.py          # Settings (env vars)
-│   │   │   └── database.py        # SQLAlchemy engine/session
+│   │   ├── core/                  # Settings, SQLAlchemy engine/session
+│   │   ├── domain/
+│   │   │   ├── enums.py           # Shared enums (sector, turnover band, etc.)
+│   │   │   └── facts.py           # BusinessFacts -- the Digital Twin's factual core
+│   │   ├── models/                # SQLAlchemy: User, Business, Registration,
+│   │   │   │                      #   Regulation, Obligation, Filing
+│   │   ├── rules/                 # Deterministic Rules Engine (no LLM)
+│   │   │   ├── base.py / types.py / engine.py / registry.py
+│   │   │   ├── gst.py / udyam.py / epf.py / esi.py
+│   │   │   └── shops_establishment.py / professional_tax.py
+│   │   ├── services/
+│   │   │   ├── twin.py            # Digital Twin assembly + summary
+│   │   │   └── compliance.py      # Rules Engine orchestration + obligation upsert
+│   │   ├── schemas/                # Pydantic request/response models
 │   │   ├── api/routes/
-│   │   │   └── health.py          # /health, /health/db, /health/llm
-│   │   ├── llm/                   # Provider-agnostic LLM abstraction
-│   │   │   ├── base.py
-│   │   │   ├── mock_provider.py
-│   │   │   ├── anthropic_provider.py
-│   │   │   └── factory.py
-│   │   └── models/
-│   │       └── base.py            # SQLAlchemy declarative base (no tables yet)
-│   ├── alembic/                   # Migrations (env.py wired to app config)
-│   ├── seed/regulations/          # Regulatory knowledge base seed structure
-│   │   ├── schema.json
-│   │   └── _template.sample.json  # placeholder, not verified legal content
-│   ├── requirements.txt
+│   │   │   ├── health.py / business.py / registrations.py
+│   │   │   └── twin.py / obligations.py / compliance.py
+│   │   └── llm/                   # Provider-agnostic LLM abstraction (unused so far)
+│   ├── alembic/versions/0001_initial_schema.py
+│   ├── seed/
+│   │   ├── load_regulations.py    # Idempotent seed loader
+│   │   └── regulations/*.json     # GST, Udyam, EPF, ESI, S&E, Professional Tax
+│   ├── tests/                     # 48 tests, run offline against SQLite
+│   ├── requirements.txt / requirements-dev.txt
 │   └── .env.example
 ├── frontend/
 │   ├── src/
-│   │   ├── main.tsx / App.tsx
-│   │   ├── pages/Dashboard.tsx    # Landing shell + backend status badge
-│   │   └── lib/api.ts             # fetch wrapper for the backend API
+│   │   ├── pages/                 # Onboarding, Dashboard, Checklist, Landing
+│   │   ├── components/Nav.tsx
+│   │   ├── lib/api.ts             # Typed fetch client for the backend API
+│   │   └── types.ts               # Mirrors backend schemas/enums
 │   ├── package.json
 │   └── .env.example
 ├── infra/postgres/init/           # pgvector extension bootstrap
@@ -161,6 +205,6 @@ msme-compliance-assistant/
 
 ## Phase plan
 
-See `CLAUDE.md` for the full phased implementation plan (Phase 0 is complete;
-Phases 1–6 build out the Rules Engine, RAG/Knowledge Graph, predictive risk,
-watchdog, voice, and human-in-the-loop approval workflow).
+See `CLAUDE.md` for the full phased implementation plan (Phases 0–1 are
+complete; Phases 2–6 build out RAG/Knowledge Graph, predictive risk,
+watchdog, voice, and the human-in-the-loop approval workflow).
