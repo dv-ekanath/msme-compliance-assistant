@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RegulationSeedEntry",
+  "description": "One entry = one regulation, mirroring the `regulation` table in the Phase 0 plan. `chunks` will be embedded into `regulation_chunk` (pgvector) once the RAG pipeline is built in Phase 2.",
+  "type": "object",
+  "required": ["code", "title", "authority", "jurisdiction", "source_url", "effective_date", "version", "applicability_rules", "chunks"],
+  "properties": {
+    "code": { "type": "string", "description": "Short unique identifier, e.g. \"GST-REG-THRESHOLD\"" },
+    "title": { "type": "string" },
+    "authority": { "type": "string", "description": "Issuing body, e.g. \"CBIC\", \"EPFO\", \"Ministry of MSME\"" },
+    "jurisdiction": { "type": "string", "description": "\"IN-Central\" or a state code, e.g. \"IN-MH\"" },
+    "source_url": { "type": "string", "format": "uri", "description": "Authoritative government source for citation" },
+    "effective_date": { "type": "string", "format": "date" },
+    "version": { "type": "string" },
+    "applicability_rules": {
+      "type": "object",
+      "description": "Machine-checkable conditions the Phase 1 Rules Engine will evaluate against a business's Digital Twin facts.",
+      "additionalProperties": true
+    },
+    "chunks": {
+      "type": "array",
+      "description": "Text passages that will be embedded for RAG retrieval in Phase 2.",
+      "items": {
+        "type": "object",
+        "required": ["section_ref", "text"],
+        "properties": {
+          "section_ref": { "type": "string", "description": "e.g. \"Section 22(1)\"" },
+          "text": { "type": "string" }
+        }
+      }
+    }
+  }
+}

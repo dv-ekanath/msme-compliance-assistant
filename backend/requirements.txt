@@ -1,0 +1,16 @@
+# Core API
+fastapi>=0.115
+uvicorn[standard]>=0.32
+
+# Database (Postgres + pgvector-ready, migrations)
+sqlalchemy>=2.0.36
+alembic>=1.14
+psycopg[binary]>=3.2
+
+# Config
+pydantic-settings>=2.6
+
+# NOTE: `anthropic` is deliberately NOT listed here. It is an optional
+# dependency needed only when LLM_PROVIDER=anthropic. Install it yourself
+# when you're ready to plug in the real API:
+#   pip install anthropic

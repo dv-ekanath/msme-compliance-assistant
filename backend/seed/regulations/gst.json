@@ -1,0 +1,21 @@
+{
+  "code": "GST",
+  "title": "Goods and Services Tax — Registration & Periodic Return Filing",
+  "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://www.gst.gov.in/",
+  "effective_date": "2017-07-01",
+  "version": "CGST Act 2017, Section 22 (paraphrased; verify current notifications)",
+  "applicability_rules": {
+    "goods_threshold_inr": 4000000,
+    "services_threshold_inr": 2000000,
+    "special_category_goods_threshold_inr": 2000000,
+    "special_category_services_threshold_inr": 1000000,
+    "special_category_states": [],
+    "quarterly_filing_turnover_ceiling_inr": 50000000,
+    "monthly_filing_deadline_days_after_period_end": 20,
+    "quarterly_filing_deadline_days_after_period_end": 22
+  },
+  "notes": "special_category_states is deliberately left empty -- the exact current list under GST Council notifications needs verification before use. goods/services thresholds (Rs 40L/20L standard, Rs 20L/10L special-category) and the QRMP Rs 5 crore ceiling are the well-established general figures; exact statutory filing due dates (20th/22nd/24th) vary by scheme and state group and are approximated here.",
+  "chunks": []
+}

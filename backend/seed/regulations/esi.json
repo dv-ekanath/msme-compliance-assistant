@@ -1,0 +1,15 @@
+{
+  "code": "ESI",
+  "title": "Employees' State Insurance — Registration & Monthly Filing",
+  "authority": "Employees' State Insurance Corporation (ESIC)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://www.esic.gov.in/",
+  "effective_date": "1948-04-19",
+  "version": "ESI Act 1948 (paraphrased; verify current state-wise notifications)",
+  "applicability_rules": {
+    "min_employee_count": 10,
+    "filing_deadline_days_after_period_end": 15
+  },
+  "notes": "10-employee threshold is the commonly cited current figure for most states/UTs after being reduced from 20; a few states/establishment types may still apply a different threshold -- verify against the applicable state ESIC notification. Monthly contribution due date (commonly cited as the 15th of the following month) should be verified on esic.gov.in.",
+  "chunks": []
+}

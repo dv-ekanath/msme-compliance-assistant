@@ -1,0 +1,14 @@
+{
+  "code": "SHOPS_ESTABLISHMENT",
+  "title": "Shops & Establishment Act (State Legislation)",
+  "authority": "State Labour Department (varies by state)",
+  "jurisdiction": "IN-STATE",
+  "source_url": "https://labour.gov.in/",
+  "effective_date": "2017-01-01",
+  "version": "PLACEHOLDER -- no verified per-state thresholds configured yet",
+  "applicability_rules": {
+    "jurisdiction_config_required": true
+  },
+  "notes": "Shops & Establishment registration is administered independently by each state, with different thresholds, exemptions, and renewal cycles. labour.gov.in (Ministry of Labour & Employment) is used here only as a general central reference -- it is NOT a substitute for the specific state Act. The corresponding rule intentionally returns review_required rather than asserting an unverified threshold. Replace with the correct state-specific portal URL before relying on this for a specific state.",
+  "chunks": []
+}

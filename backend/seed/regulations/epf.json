@@ -1,0 +1,15 @@
+{
+  "code": "EPF",
+  "title": "Employees' Provident Fund — Registration & Monthly Filing",
+  "authority": "Employees' Provident Fund Organisation (EPFO)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://www.epfindia.gov.in/",
+  "effective_date": "1952-11-04",
+  "version": "EPF & MP Act 1952, Section 1(3) (paraphrased; verify current notifications)",
+  "applicability_rules": {
+    "min_employee_count": 20,
+    "filing_deadline_days_after_period_end": 15
+  },
+  "notes": "20-employee threshold is the well-established general figure under Section 1(3); some scheduled industries/classes of establishments have been brought in below this via separate Central Government notification, which is not modeled here. Monthly ECR filing due date (commonly cited as the 15th of the following month) should be verified on epfindia.gov.in.",
+  "chunks": []
+}

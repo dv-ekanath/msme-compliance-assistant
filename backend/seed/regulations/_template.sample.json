@@ -1,0 +1,21 @@
+{
+  "_comment": "TEMPLATE ONLY -- placeholder text, not verified legal language or a real source URL. Copy this file per regulation and replace every field with verified content + an exact gov source URL before Phase 1/2 seeding. Validate against schema.json.",
+  "code": "SAMPLE-REG-CODE",
+  "title": "Sample Regulation Title",
+  "authority": "Issuing Authority",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://example.gov.in/replace-with-real-source",
+  "effective_date": "2024-01-01",
+  "version": "1.0",
+  "applicability_rules": {
+    "sector": ["any"],
+    "min_employee_count": 0,
+    "min_turnover_inr": 0
+  },
+  "chunks": [
+    {
+      "section_ref": "Section X",
+      "text": "Replace with the verified, verbatim (or accurately paraphrased and clearly marked as such) regulation text."
+    }
+  ]
+}

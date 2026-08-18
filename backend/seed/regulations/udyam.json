@@ -1,0 +1,16 @@
+{
+  "code": "UDYAM",
+  "title": "Udyam Registration — MSME Classification",
+  "authority": "Ministry of Micro, Small and Medium Enterprises (MSME)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://udyamregistration.gov.in/",
+  "effective_date": "2020-07-01",
+  "version": "2020 MSME classification criteria (verify for later revisions)",
+  "applicability_rules": {
+    "micro_turnover_ceiling_inr": 50000000,
+    "small_turnover_ceiling_inr": 500000000,
+    "medium_turnover_ceiling_inr": 2500000000
+  },
+  "notes": "MSME classification is officially based on BOTH investment and turnover; Business does not yet model investment, so this rule only checks the turnover ceiling. MSME classification limits have been revised more than once since 2020 -- verify current figures on udyamregistration.gov.in before relying on this for a real classification decision.",
+  "chunks": []
+}
