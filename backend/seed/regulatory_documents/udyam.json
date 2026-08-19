@@ -1,0 +1,21 @@
+{
+  "code": "UDYAM-DEMO-01",
+  "regulation_code": "UDYAM",
+  "title": "Udyam Registration — MSME Classification (demo excerpt)",
+  "authority": "Ministry of Micro, Small and Medium Enterprises (MSME)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://udyamregistration.gov.in/",
+  "document_type": "demo_excerpt",
+  "effective_date": "2020-07-01",
+  "version": "Demo excerpt derived from backend/seed/regulations/udyam.json (Phase 1)",
+  "status": "demo",
+  "sections": [
+    {
+      "section": "MSME Classification Ceilings",
+      "subsection": null,
+      "source_reference": "2020 MSME classification criteria (paraphrased -- verify for later revisions)",
+      "source_page": null,
+      "content": "Udyam registration classifies an enterprise as Micro, Small, or Medium based on both investment and annual turnover. Under the 2020 criteria: Micro requires turnover up to Rs 5 crore, Small up to Rs 50 crore, and Medium up to Rs 250 crore (with corresponding investment ceilings). Registration is not compulsory the way GST is, but is required to access statutory MSME benefits and schemes. MSME classification limits have been revised more than once since 2020 -- verify current figures on udyamregistration.gov.in. This is a system-generated summary, not verbatim notification text."
+    }
+  ]
+}

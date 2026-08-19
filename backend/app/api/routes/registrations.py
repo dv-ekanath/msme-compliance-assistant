@@ -10,6 +10,7 @@ from app.core.database import get_db
 from app.models.business import Business
 from app.models.registration import Registration
 from app.schemas.registration import RegistrationCreate, RegistrationRead, RegistrationUpdate
+from app.services.audit import log_audit_event
 
 router = APIRouter(prefix="/registrations", tags=["registrations"])
 
@@ -22,6 +23,15 @@ def create_registration(payload: RegistrationCreate, db: Session = Depends(get_d
     registration = Registration(**payload.model_dump())
     db.add(registration)
     try:
+        db.flush()
+        log_audit_event(
+            db,
+            actor_id=None,
+            action="registration.created",
+            entity_type="registration",
+            entity_id=registration.id,
+            detail=f"'{payload.type.value}' registration added for business {payload.business_id}.",
+        )
         db.commit()
     except IntegrityError as exc:
         db.rollback()
@@ -54,6 +64,14 @@ def update_registration(
     for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(registration, field, value)
 
+    log_audit_event(
+        db,
+        actor_id=None,
+        action="registration.updated",
+        entity_type="registration",
+        entity_id=registration.id,
+        detail=f"Registration updated: {sorted(payload.model_dump(exclude_unset=True).keys())}.",
+    )
     db.commit()
     db.refresh(registration)
     return registration

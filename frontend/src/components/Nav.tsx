@@ -1,7 +1,16 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { clearSession, getRole, getToken } from '../lib/auth'
 
 export default function Nav() {
   const { businessId } = useParams<{ businessId?: string }>()
+  const navigate = useNavigate()
+  const token = getToken()
+  const role = getRole()
+
+  function logout() {
+    clearSession()
+    navigate('/login')
+  }
 
   return (
     <header className="border-b border-slate-200 bg-white px-6 py-4">
@@ -21,6 +30,15 @@ export default function Nav() {
               <Link to={`/checklist/${businessId}`} className="text-slate-600 hover:text-slate-900">
                 Checklist
               </Link>
+              <Link to={`/copilot/${businessId}`} className="text-slate-600 hover:text-slate-900">
+                Copilot
+              </Link>
+              <Link to={`/alerts/${businessId}`} className="text-slate-600 hover:text-slate-900">
+                Alerts
+              </Link>
+              <Link to={`/filings/${businessId}`} className="text-slate-600 hover:text-slate-900">
+                Filings
+              </Link>
             </>
           )}
           <Link
@@ -29,6 +47,15 @@ export default function Nav() {
           >
             {businessId ? 'New Business' : 'Get Started'}
           </Link>
+          {token ? (
+            <button onClick={logout} className="text-slate-600 hover:text-slate-900">
+              Log out ({role})
+            </button>
+          ) : (
+            <Link to="/login" className="text-slate-600 hover:text-slate-900">
+              Log in
+            </Link>
+          )}
         </nav>
       </div>
     </header>

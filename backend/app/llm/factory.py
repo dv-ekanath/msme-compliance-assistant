@@ -27,6 +27,14 @@ def get_llm_provider() -> LLMProvider:
             model=settings.anthropic_model,
         )
 
+    if settings.llm_provider == "groq":
+        from app.llm.groq_provider import GroqLLMProvider
+
+        return GroqLLMProvider(
+            api_key=settings.groq_api_key,
+            model=settings.groq_model,
+        )
+
     raise ValueError(
-        f"Unknown LLM_PROVIDER: {settings.llm_provider!r} (expected 'mock' or 'anthropic')"
+        f"Unknown LLM_PROVIDER: {settings.llm_provider!r} (expected 'mock', 'anthropic', or 'groq')"
     )

@@ -10,9 +10,8 @@ from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
 
 
 class User(Base, UUIDPrimaryKeyMixin, TimestampMixin):
-    """Not exposed via any API yet -- auth is Phase 5. Exists now so
-    Filing.human_approved_by has somewhere to point, and so the schema
-    doesn't need a breaking migration later to introduce it.
+    """Exposed via /auth (Phase 5) -- see app/api/routes/auth.py,
+    app/core/security.py. Also what Filing.human_approved_by points to.
     """
 
     __tablename__ = "users"
@@ -23,3 +22,6 @@ class User(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     business_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("businesses.id", ondelete="SET NULL"), nullable=True
     )
+    # Nullable at the column level only because the column must exist
+    # before any row does; POST /auth/register always populates it.
+    hashed_password: Mapped[str | None] = mapped_column(String(255), nullable=True)

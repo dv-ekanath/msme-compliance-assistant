@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 
-from sqlalchemy import Date, JSON, String, Text
+from sqlalchemy import Date, DateTime, JSON, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
@@ -31,3 +31,8 @@ class Regulation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     # the same unbounded Text as `notes`, not an arbitrary VARCHAR cap.
     version: Mapped[str] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    # Phase 3 watchdog scan state. content_hash is None until the first
+    # scan (a baseline check, not a "change"); see app/watchdog/scanner.py.
+    content_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    last_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

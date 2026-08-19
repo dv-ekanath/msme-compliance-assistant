@@ -10,6 +10,8 @@ from app.core.database import get_db
 from app.models.business import Business
 from app.schemas.compliance import ComplianceEvaluationResult, ComplianceResultItem
 from app.schemas.twin import ComplianceSummary
+from app.services.alerts import generate_growth_forecast_alerts
+from app.services.audit import log_audit_event
 from app.services.compliance import evaluate_business_compliance
 from app.services.twin import compute_summary
 
@@ -30,6 +32,21 @@ def evaluate_compliance(business_id: uuid.UUID, db: Session = Depends(get_db)) -
         obligations, results, regulations_by_code = evaluate_business_compliance(db, business)
     except ValueError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+    generate_growth_forecast_alerts(db, business, regulations_by_code)
+
+    # Audited once per call, not once per obligation upsert inside
+    # evaluate_business_compliance -- one evaluate can touch 9 obligation
+    # rows and they aren't independent user actions.
+    log_audit_event(
+        db,
+        actor_id=None,
+        action="compliance.evaluated",
+        entity_type="business",
+        entity_id=business_id,
+        detail=f"Compliance re-evaluated for '{business.name}' ({len(results)} rules run).",
+    )
+    db.commit()
 
     obligations_by_rule = {o.rule_id: o for o in obligations}
     result_items = [

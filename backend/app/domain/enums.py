@@ -134,3 +134,46 @@ class FilingStatus(str, Enum):
     SUBMITTED = "submitted"
     APPROVED = "approved"
     REJECTED = "rejected"
+
+
+class DocumentType(str, Enum):
+    ACT = "act"
+    NOTIFICATION = "notification"
+    CIRCULAR = "circular"
+    FAQ = "faq"
+    DEMO_EXCERPT = "demo_excerpt"
+    OTHER = "other"
+
+
+class SourceStatus(str, Enum):
+    """How much to trust a RegulatoryDocument/Chunk as legal evidence.
+
+    VERIFIED  -- ingested from an authoritative source with confirmed
+                 verbatim/faithfully-paraphrased text (none yet in Phase 2 --
+                 see backend/seed/regulatory_documents/README.md).
+    DEMO      -- system-authored summary derived from Phase 1's verified
+                 regulation metadata, clearly not verbatim statute text.
+                 Everything currently seeded is DEMO.
+    UNVERIFIED -- ingested but not yet reviewed; retrieval must never
+                 surface these as evidence.
+    """
+
+    VERIFIED = "verified"
+    DEMO = "demo"
+    UNVERIFIED = "unverified"
+
+
+class AlertType(str, Enum):
+    """REGULATION_CHANGE is a global event (business_id is NULL -- relevance
+    is computed via the Obligation join, not stored per-business).
+    GROWTH_FORECAST is inherently per-business.
+    """
+
+    REGULATION_CHANGE = "regulation_change"
+    GROWTH_FORECAST = "growth_forecast"
+
+
+class AlertSeverity(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"

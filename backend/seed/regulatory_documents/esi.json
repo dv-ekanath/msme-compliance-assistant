@@ -1,0 +1,28 @@
+{
+  "code": "ESI-DEMO-01",
+  "regulation_code": "ESI",
+  "title": "Employees' State Insurance — Registration & Monthly Filing (demo excerpt)",
+  "authority": "Employees' State Insurance Corporation (ESIC)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://www.esic.gov.in/",
+  "document_type": "demo_excerpt",
+  "effective_date": "1948-04-19",
+  "version": "Demo excerpt derived from backend/seed/regulations/esi.json (Phase 1)",
+  "status": "demo",
+  "sections": [
+    {
+      "section": "Applicability Threshold",
+      "subsection": null,
+      "source_reference": "ESI Act 1948 (paraphrased -- verify against esic.gov.in)",
+      "source_page": null,
+      "content": "The ESI Act 1948 applies to non-seasonal establishments employing 10 or more persons in most states/UTs -- the threshold was historically 20 and has been reduced to 10 in most, but not necessarily all, jurisdictions. Confirm the applicable threshold for your specific state and establishment type before relying on this. This is a system-generated summary, not verbatim statute text."
+    },
+    {
+      "section": "Monthly Contribution Filing",
+      "subsection": null,
+      "source_reference": "ESIC monthly contribution process (paraphrased)",
+      "source_page": null,
+      "content": "Once ESI-registered, an employer must file monthly contributions covering both employer and employee shares. The due date is commonly cited as the 15th of the following month -- verify the current deadline on esic.gov.in. This is a system-generated summary, not verbatim statute text."
+    }
+  ]
+}

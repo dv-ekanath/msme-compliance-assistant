@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Nav from '../components/Nav'
-import { listObligations, updateObligationStatus } from '../lib/api'
+import { createFiling, listObligations, updateObligationStatus } from '../lib/api'
+import { getToken } from '../lib/auth'
 import type { Obligation, ObligationStatus } from '../types'
 
 type FilterKey = 'all' | 'due_soon' | 'overdue' | 'completed'
@@ -20,11 +21,19 @@ const STATUS_STYLES: Record<ObligationStatus, string> = {
   completed: 'bg-emerald-100 text-emerald-700',
 }
 
+const RISK_BAND_STYLES: Record<'low' | 'medium' | 'high', string> = {
+  low: 'bg-emerald-100 text-emerald-700',
+  medium: 'bg-amber-100 text-amber-700',
+  high: 'bg-red-100 text-red-700',
+}
+
 export default function Checklist() {
   const { businessId } = useParams<{ businessId: string }>()
+  const navigate = useNavigate()
   const [obligations, setObligations] = useState<Obligation[]>([])
   const [filter, setFilter] = useState<FilterKey>('all')
   const [loading, setLoading] = useState(true)
+  const [filingError, setFilingError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!businessId) return
@@ -42,6 +51,20 @@ export default function Checklist() {
   async function markCompleted(obligation: Obligation) {
     const updated = await updateObligationStatus(obligation.id, 'completed')
     setObligations((prev) => prev.map((o) => (o.id === updated.id ? updated : o)))
+  }
+
+  async function prepareFiling(obligation: Obligation) {
+    if (!getToken()) {
+      navigate('/login')
+      return
+    }
+    setFilingError(null)
+    try {
+      await createFiling(obligation.id)
+      navigate(`/filings/${businessId}`)
+    } catch (err) {
+      setFilingError(err instanceof Error ? err.message : 'Could not prepare a filing for this obligation.')
+    }
   }
 
   return (
@@ -68,6 +91,8 @@ export default function Checklist() {
           ))}
         </div>
 
+        {filingError && <p className="mb-4 text-sm text-red-600">{filingError}</p>}
+
         {loading ? (
           <p className="text-sm text-slate-500">Loading…</p>
         ) : visible.length === 0 ? (
@@ -87,6 +112,14 @@ export default function Checklist() {
                     {o.applicability === 'review_required' && (
                       <span className="rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
                         Needs review
+                      </span>
+                    )}
+                    {o.risk_band && (
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${RISK_BAND_STYLES[o.risk_band]}`}
+                        title={o.risk_reason ?? undefined}
+                      >
+                        {o.risk_band} risk
                       </span>
                     )}
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[o.status]}`}>
@@ -111,14 +144,24 @@ export default function Checklist() {
 
                 <div className="flex items-center justify-between text-xs text-slate-400">
                   <span>Due: {o.due_date ?? '—'}</span>
-                  {o.status !== 'completed' && (
-                    <button
-                      onClick={() => markCompleted(o)}
-                      className="rounded-md border border-slate-300 px-2 py-1 text-slate-600 hover:bg-slate-50"
-                    >
-                      Mark completed
-                    </button>
-                  )}
+                  <div className="flex gap-2">
+                    {o.obligation_type === 'filing' && o.applicability === 'applicable' && (
+                      <button
+                        onClick={() => prepareFiling(o)}
+                        className="rounded-md border border-slate-300 px-2 py-1 text-slate-600 hover:bg-slate-50"
+                      >
+                        Prepare Filing
+                      </button>
+                    )}
+                    {o.status !== 'completed' && (
+                      <button
+                        onClick={() => markCompleted(o)}
+                        className="rounded-md border border-slate-300 px-2 py-1 text-slate-600 hover:bg-slate-50"
+                      >
+                        Mark completed
+                      </button>
+                    )}
+                  </div>
                 </div>
               </li>
             ))}

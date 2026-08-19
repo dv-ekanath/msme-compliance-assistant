@@ -9,6 +9,7 @@ from app.core.database import get_db
 from app.domain.enums import ObligationApplicability, ObligationStatus
 from app.models.obligation import Obligation
 from app.schemas.obligation import ObligationRead, ObligationStatusUpdate
+from app.services.audit import log_audit_event
 
 router = APIRouter(prefix="/obligations", tags=["obligations"])
 
@@ -44,6 +45,14 @@ def update_obligation_status(
         raise HTTPException(status_code=404, detail="Obligation not found")
 
     obligation.status = payload.status
+    log_audit_event(
+        db,
+        actor_id=None,
+        action="obligation.status_updated",
+        entity_type="obligation",
+        entity_id=obligation.id,
+        detail=f"'{obligation.title}' status set to '{payload.status.value}'.",
+    )
     db.commit()
     db.refresh(obligation)
     return obligation

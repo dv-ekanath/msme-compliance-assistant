@@ -1,8 +1,14 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useState, type ChangeEvent, type FormEvent, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Nav from '../components/Nav'
-import { createBusiness, createRegistration, evaluateCompliance } from '../lib/api'
-import type { BusinessLegalType, RegistrationType, SectorType, TurnoverBand } from '../types'
+import { createBusiness, createRegistration, evaluateCompliance, extractDocument } from '../lib/api'
+import type { BusinessLegalType, DocumentType, RegistrationType, SectorType, TurnoverBand } from '../types'
+
+const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
+  { value: 'gst_certificate', label: 'GST Registration Certificate' },
+  { value: 'udyam_certificate', label: 'Udyam Registration Certificate' },
+  { value: 'pan_card', label: 'PAN Card' },
+]
 
 const SECTORS: { value: SectorType; label: string }[] = [
   { value: 'trading', label: 'Trading / Goods' },
@@ -60,8 +66,51 @@ export default function Onboarding() {
     other: false,
   })
 
+  const [gstin, setGstin] = useState('')
+  const [udyamNumber, setUdyamNumber] = useState('')
+  const [pan, setPan] = useState('')
+
+  const [docType, setDocType] = useState<DocumentType>('gst_certificate')
+  const [docFile, setDocFile] = useState<File | null>(null)
+  const [docStatus, setDocStatus] = useState<'idle' | 'analyzing' | 'done' | 'error'>('idle')
+  const [docFieldsFound, setDocFieldsFound] = useState<string[]>([])
+  const [docWarning, setDocWarning] = useState<string | null>(null)
+
   function toggleFlag(key: RegistrationType) {
     setFlags((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
+
+  async function handleDocUpload(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setDocFile(file)
+    setDocStatus('analyzing')
+    setDocWarning(null)
+    setDocFieldsFound([])
+
+    try {
+      const result = await extractDocument(docType, file)
+      const found: string[] = []
+      if (result.fields.gstin) {
+        setGstin(result.fields.gstin)
+        setFlags((prev) => ({ ...prev, gst: true }))
+        found.push(`GSTIN ${result.fields.gstin}`)
+      }
+      if (result.fields.udyam_number) {
+        setUdyamNumber(result.fields.udyam_number)
+        setFlags((prev) => ({ ...prev, udyam: true }))
+        found.push(`Udyam Number ${result.fields.udyam_number}`)
+      }
+      if (result.fields.pan) {
+        setPan(result.fields.pan)
+        found.push(`PAN ${result.fields.pan}`)
+      }
+      setDocFieldsFound(found)
+      setDocWarning(result.warning)
+      setDocStatus('done')
+    } catch {
+      setDocStatus('error')
+    }
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -77,10 +126,19 @@ export default function Onboarding() {
         turnover_band: turnoverBand,
         employee_count: employeeCount,
         incorporation_date: incorporationDate || null,
+        gstin: gstin.trim() || undefined,
+        udyam_number: udyamNumber.trim() || undefined,
+        pan: pan.trim() || undefined,
       })
 
       const activeFlags = REGISTRATION_FLAGS.filter((f) => flags[f.key])
-      await Promise.all(activeFlags.map((f) => createRegistration(business.id, f.key)))
+      await Promise.all(
+        activeFlags.map((f) => {
+          const number =
+            f.key === 'gst' ? gstin.trim() || undefined : f.key === 'udyam' ? udyamNumber.trim() || undefined : undefined
+          return createRegistration(business.id, f.key, number)
+        }),
+      )
 
       await evaluateCompliance(business.id)
 
@@ -101,6 +159,56 @@ export default function Onboarding() {
           Tell us about your business. We'll build your Compliance Digital Twin and evaluate
           applicable obligations immediately.
         </p>
+
+        <div className="mb-6 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-5">
+          <p className="mb-1 text-sm font-medium text-slate-700">Quick Start — Upload a document</p>
+          <p className="mb-3 text-xs text-slate-500">
+            Upload a photo of a GST certificate, Udyam certificate, or PAN card (JPEG/PNG) to
+            auto-fill the fields below. This runs real OCR — always double-check the extracted
+            value before submitting.
+          </p>
+          <div className="mb-3">
+            <select
+              value={docType}
+              onChange={(e) => setDocType(e.target.value as DocumentType)}
+              className="input"
+            >
+              {DOCUMENT_TYPES.map((t) => (
+                <option key={t.value} value={t.value}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <input
+            type="file"
+            accept=".jpg,.jpeg,.png"
+            onChange={handleDocUpload}
+            className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-slate-700"
+          />
+          {docStatus === 'analyzing' && (
+            <p className="mt-3 flex items-center gap-2 text-sm text-slate-500">
+              <span className="h-3 w-3 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600" />
+              Reading {docFile?.name}…
+            </p>
+          )}
+          {docStatus === 'error' && (
+            <p className="mt-3 text-sm text-red-600">
+              Could not process that document. Please try again or enter the details manually below.
+            </p>
+          )}
+          {docStatus === 'done' && docFieldsFound.length > 0 && (
+            <div className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+              Detected from your document: {docFieldsFound.join(', ')} — please verify below before
+              submitting.
+            </div>
+          )}
+          {docStatus === 'done' && docWarning && (
+            <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
+              {docWarning}
+            </div>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-6 rounded-lg border border-slate-200 bg-white p-6">
           <Field label="Business name">
@@ -199,6 +307,38 @@ export default function Onboarding() {
                   {f.label}
                 </label>
               ))}
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend className="mb-2 text-sm font-medium text-slate-700">
+              Registration numbers (auto-filled from an uploaded document, or enter manually)
+            </legend>
+            <div className="grid grid-cols-3 gap-4">
+              <Field label="GSTIN">
+                <input
+                  value={gstin}
+                  onChange={(e) => setGstin(e.target.value)}
+                  className="input"
+                  placeholder="22AAAAA0000A1Z5"
+                />
+              </Field>
+              <Field label="Udyam Number">
+                <input
+                  value={udyamNumber}
+                  onChange={(e) => setUdyamNumber(e.target.value)}
+                  className="input"
+                  placeholder="UDYAM-XX-00-0000000"
+                />
+              </Field>
+              <Field label="PAN">
+                <input
+                  value={pan}
+                  onChange={(e) => setPan(e.target.value)}
+                  className="input"
+                  placeholder="ABCDE1234F"
+                />
+              </Field>
             </div>
           </fieldset>
 

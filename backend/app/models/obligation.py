@@ -13,6 +13,7 @@ from app.domain.enums import (
     ObligationType,
 )
 from app.models.base import Base, TimestampMixin, UUIDPrimaryKeyMixin
+from app.rules.risk import band_for_score, explain_risk
 
 
 class Obligation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
@@ -62,3 +63,20 @@ class Obligation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     @property
     def regulation_source_url(self) -> str:
         return self.regulation.source_url
+
+    @property
+    def risk_band(self) -> str | None:
+        if self.risk_score is None:
+            return None
+        return band_for_score(self.risk_score)
+
+    @property
+    def risk_reason(self) -> str | None:
+        if self.risk_score is None:
+            return None
+        return explain_risk(
+            status=self.status,
+            obligation_type=self.obligation_type,
+            frequency=self.frequency,
+            band=band_for_score(self.risk_score),
+        )

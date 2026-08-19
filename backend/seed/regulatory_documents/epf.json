@@ -1,0 +1,28 @@
+{
+  "code": "EPF-DEMO-01",
+  "regulation_code": "EPF",
+  "title": "Employees' Provident Fund — Registration & Monthly Filing (demo excerpt)",
+  "authority": "Employees' Provident Fund Organisation (EPFO)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://www.epfindia.gov.in/",
+  "document_type": "demo_excerpt",
+  "effective_date": "1952-11-04",
+  "version": "Demo excerpt derived from backend/seed/regulations/epf.json (Phase 1)",
+  "status": "demo",
+  "sections": [
+    {
+      "section": "Applicability Threshold",
+      "subsection": null,
+      "source_reference": "EPF & MP Act 1952, Section 1(3) (paraphrased -- verify against epfindia.gov.in)",
+      "source_page": null,
+      "content": "The EPF & Miscellaneous Provisions Act 1952 applies to establishments employing 20 or more persons. Some scheduled industries or classes of establishments have been brought in below this threshold via separate Central Government notification, which is not modeled in this system. This is a system-generated summary, not verbatim statute text."
+    },
+    {
+      "section": "Monthly Filing (ECR)",
+      "subsection": null,
+      "source_reference": "EPFO Electronic Challan-cum-Return process (paraphrased)",
+      "source_page": null,
+      "content": "Once EPF-registered, an employer must file a monthly Electronic Challan-cum-Return (ECR) and remit contributions. The due date is commonly cited as the 15th of the following month -- verify the current deadline on epfindia.gov.in. This is a system-generated summary, not verbatim statute text."
+    }
+  ]
+}

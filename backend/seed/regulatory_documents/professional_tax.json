@@ -1,0 +1,21 @@
+{
+  "code": "PROFESSIONAL-TAX-DEMO-01",
+  "regulation_code": "PROFESSIONAL_TAX",
+  "title": "Professional Tax — State Legislation (demo excerpt)",
+  "authority": "State Finance / Commercial Tax Department (varies by state; not levied in all states)",
+  "jurisdiction": "IN-STATE",
+  "source_url": "https://labour.gov.in/",
+  "document_type": "demo_excerpt",
+  "effective_date": "2017-01-01",
+  "version": "Demo excerpt derived from backend/seed/regulations/professional_tax.json (Phase 1)",
+  "status": "demo",
+  "sections": [
+    {
+      "section": "State-Levied Tax on Employment",
+      "subsection": null,
+      "source_reference": null,
+      "source_page": null,
+      "content": "Professional Tax is levied by some states (e.g. Maharashtra, Karnataka, West Bengal) and not others (e.g. Delhi, Haryana, Uttar Pradesh), with state-specific salary slabs and no single central regulator. This system does not yet have verified per-state slab data loaded, so the deterministic Rules Engine marks this obligation as requiring manual review when a business has employees, rather than asserting an unverified slab. This is a system-generated summary, not verbatim statute text."
+    }
+  ]
+}

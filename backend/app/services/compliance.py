@@ -11,6 +11,7 @@ from app.models.obligation import Obligation
 from app.models.regulation import Regulation
 from app.rules.engine import RulesEngine
 from app.rules.registry import REGULATION_CODES
+from app.rules.risk import score_obligation
 from app.rules.types import RegulationConfig, RuleResult
 from app.services.twin import build_business_facts
 
@@ -103,6 +104,17 @@ def evaluate_business_compliance(
             obligation.due_date = None
             if obligation.status != ObligationStatus.COMPLETED:
                 obligation.status = ObligationStatus.PENDING
+
+        if result.applicability == ObligationApplicability.APPLICABLE:
+            obligation.risk_score = score_obligation(
+                status=obligation.status,
+                obligation_type=obligation.obligation_type,
+                frequency=obligation.frequency,
+                due_date=obligation.due_date,
+                today=today,
+            )
+        else:
+            obligation.risk_score = None
 
         touched.append(obligation)
 

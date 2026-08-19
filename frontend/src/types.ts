@@ -85,6 +85,8 @@ export interface Obligation {
   applicability: ObligationApplicability
   status: ObligationStatus
   risk_score: number | null
+  risk_band: 'low' | 'medium' | 'high' | null
+  risk_reason: string | null
   last_evaluated_at: string
   regulation_title: string
   regulation_source_url: string
@@ -127,4 +129,95 @@ export interface ComplianceEvaluationResult {
   evaluated_at: string
   results: ComplianceResultItem[]
   summary: ComplianceSummary
+}
+
+// --- Compliance Copilot (Phase 2: RAG) ---
+
+export type CopilotConfidence = 'high' | 'medium' | 'low'
+
+export interface Citation {
+  source_id: string
+  title: string
+  authority: string
+  section: string | null
+  source_url: string
+  relevance_score: number
+  status: string
+}
+
+export interface RetrievedSource {
+  chunk_id: string
+  title: string
+  authority: string
+  section: string | null
+  source_url: string
+  relevance_score: number
+  status: string
+}
+
+export interface CopilotAskResponse {
+  answer: string
+  citations: Citation[]
+  retrieved_sources: RetrievedSource[]
+  confidence: CopilotConfidence
+  grounded: boolean
+  requires_verification: boolean
+}
+
+// --- Phase 3: Predictive risk + Watchdog ---
+
+export type AlertType = 'regulation_change' | 'growth_forecast'
+
+export type AlertSeverity = 'low' | 'medium' | 'high'
+
+export interface Alert {
+  id: string
+  alert_type: AlertType
+  business_id: string | null
+  regulation_id: string | null
+  obligation_id: string | null
+  severity: AlertSeverity
+  title: string
+  message: string
+  detected_at: string
+  acknowledged_at: string | null
+  regulation_title: string | null
+  regulation_source_url: string | null
+}
+
+// --- Phase 4: Document AI (OCR) ---
+
+export type DocumentType = 'gst_certificate' | 'udyam_certificate' | 'pan_card'
+
+export interface DocumentExtractionResponse {
+  fields: Record<string, string>
+  warning: string | null
+}
+
+// --- Phase 5: Human-in-the-loop + Submission + Audit ---
+
+export type UserRole = 'owner' | 'ca' | 'admin'
+
+export interface TokenResponse {
+  access_token: string
+  token_type: string
+  role: UserRole
+  user_id: string
+}
+
+export type FilingStatus = 'draft' | 'submitted' | 'approved' | 'rejected'
+
+export interface Filing {
+  id: string
+  obligation_id: string
+  business_id: string
+  obligation_title: string
+  period: string | null
+  status: FilingStatus
+  document_ref: string | null
+  human_approved_by: string | null
+  submitted_at: string | null
+  created_at: string
+  mock: boolean
+  mock_notice: string | null
 }

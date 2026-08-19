@@ -1,0 +1,28 @@
+{
+  "code": "GST-DEMO-01",
+  "regulation_code": "GST",
+  "title": "Goods and Services Tax — Registration & Periodic Return Filing (demo excerpt)",
+  "authority": "Central Board of Indirect Taxes and Customs (CBIC)",
+  "jurisdiction": "IN-Central",
+  "source_url": "https://www.gst.gov.in/",
+  "document_type": "demo_excerpt",
+  "effective_date": "2017-07-01",
+  "version": "Demo excerpt derived from backend/seed/regulations/gst.json (Phase 1)",
+  "status": "demo",
+  "sections": [
+    {
+      "section": "Registration Threshold",
+      "subsection": null,
+      "source_reference": "CGST Act 2017, Section 22 (paraphrased -- verify against gst.gov.in)",
+      "source_page": null,
+      "content": "Under Section 22 of the CGST Act 2017, a business must register for GST once its aggregate turnover crosses the prescribed threshold: Rs 40 lakh for suppliers of goods and Rs 20 lakh for suppliers of services, in the standard category. Reduced thresholds of Rs 20 lakh (goods) and Rs 10 lakh (services) apply in special category states. This is a system-generated summary of the verified regulation metadata recorded in Phase 1, not verbatim statute text -- verify the exact current wording and any subsequent GST Council amendments on gst.gov.in before relying on it."
+    },
+    {
+      "section": "Periodic Return Filing",
+      "subsection": "QRMP Scheme",
+      "source_reference": "QRMP Scheme, CBIC (paraphrased)",
+      "source_page": null,
+      "content": "Once GST-registered, a business must file periodic GSTR-3B returns. Under the QRMP (Quarterly Return Monthly Payment) scheme, businesses with aggregate turnover up to Rs 5 crore in the preceding financial year may file quarterly instead of monthly. Exact statutory due dates -- commonly cited as the 20th of the following month for monthly filers, with staggered 22nd/24th dates for quarterly filers depending on state group -- should be verified on gst.gov.in. This is a system-generated summary, not verbatim statute text."
+    }
+  ]
+}

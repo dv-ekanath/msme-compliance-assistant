@@ -23,6 +23,8 @@ class ObligationRead(BaseModel):
     applicability: ObligationApplicability
     status: ObligationStatus
     risk_score: float | None
+    risk_band: str | None
+    risk_reason: str | None
     last_evaluated_at: datetime
     regulation_title: str
     regulation_source_url: str

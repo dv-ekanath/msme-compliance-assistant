@@ -2,13 +2,38 @@
 fastapi>=0.115
 uvicorn[standard]>=0.32
 
-# Database (Postgres + pgvector-ready, migrations)
+# Database (Postgres + pgvector, migrations)
 sqlalchemy>=2.0.36
 alembic>=1.14
 psycopg[binary]>=3.2
+pgvector>=0.3
 
 # Config
 pydantic-settings>=2.6
+
+# HTTP client (used directly by LLM_PROVIDER=groq, and by the Phase 3
+# watchdog scan)
+httpx>=0.28
+
+# In-process scheduler for the Phase 3 watchdog scan (no Celery/Redis --
+# see CLAUDE.md)
+apscheduler>=3.10
+
+# Embeddings (EMBEDDING_PROVIDER=local, the default -- on-box, no API key/credits)
+sentence-transformers>=3.0
+
+# OCR (OCR_PROVIDER=easyocr, the default -- on-box, no API key/credits,
+# same "local model, downloads once" shape as embeddings above)
+easyocr>=1.7
+
+# Required by FastAPI's UploadFile/Form (Phase 4 document extraction)
+python-multipart>=0.0.9
+
+# Auth (Phase 5): password hashing + JWT. Plain functions in
+# app/core/security.py, not a provider abstraction -- there's only ever
+# one real implementation of either, nothing to swap via an env var.
+bcrypt>=4.2
+pyjwt>=2.9
 
 # NOTE: `anthropic` is deliberately NOT listed here. It is an optional
 # dependency needed only when LLM_PROVIDER=anthropic. Install it yourself
