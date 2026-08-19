@@ -25,5 +25,9 @@ class Regulation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     applicability_rules: Mapped[dict] = mapped_column(JSON, default=dict)
     source_url: Mapped[str] = mapped_column(String(500))
     effective_date: Mapped[date] = mapped_column(Date)
-    version: Mapped[str] = mapped_column(String(20))
+    # Not a short semver tag -- seed data uses this for a citation/version
+    # description that includes verification caveats (e.g. "CGST Act 2017,
+    # Section 22 (paraphrased; verify current notifications)"), so it needs
+    # the same unbounded Text as `notes`, not an arbitrary VARCHAR cap.
+    version: Mapped[str] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
